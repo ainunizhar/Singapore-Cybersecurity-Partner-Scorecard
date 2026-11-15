@@ -1,0 +1,158 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "pd_scores",
+  "position": {
+    "x": 440,
+    "y": 90,
+    "z": 1000,
+    "width": 400,
+    "height": 300,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "multiRowCard",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Companies"
+                    }
+                  },
+                  "Property": "Partnership Score"
+                }
+              },
+              "queryRef": "Companies.Partnership Score",
+              "nativeQueryRef": "Partnership Score"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Companies"
+                    }
+                  },
+                  "Property": "Score Tier"
+                }
+              },
+              "queryRef": "Companies.Score Tier",
+              "nativeQueryRef": "Score Tier"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Companies"
+                    }
+                  },
+                  "Property": "Coverage Score"
+                }
+              },
+              "queryRef": "Companies.Coverage Score",
+              "nativeQueryRef": "Coverage Score"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Companies"
+                    }
+                  },
+                  "Property": "Gap Priority"
+                }
+              },
+              "queryRef": "Companies.Gap Priority",
+              "nativeQueryRef": "Gap Priority"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Companies"
+                    }
+                  },
+                  "Property": "Upsell Services"
+                }
+              },
+              "queryRef": "Companies.Upsell Services",
+              "nativeQueryRef": "Upsell Services"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Companies"
+                    }
+                  },
+                  "Property": "MAS/CSA Focus"
+                }
+              },
+              "queryRef": "Companies.MAS/CSA Focus",
+              "nativeQueryRef": "MAS/CSA Focus"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Companies"
+                    }
+                  },
+                  "Property": "CSA Licensed"
+                }
+              },
+              "queryRef": "Companies.CSA Licensed",
+              "nativeQueryRef": "CSA Licensed"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Companies"
+                    }
+                  },
+                  "Property": "CREST Certified"
+                }
+              },
+              "queryRef": "Companies.CREST Certified",
+              "nativeQueryRef": "CREST Certified"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Scores and credentials'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

@@ -1,0 +1,78 @@
+table QualityLog
+	lineageTag: 44f9fcef-dc84-581b-b2f5-ecf0c5159a29
+
+	measure 'Log Entries' = COUNTROWS ( QualityLog )
+		formatString: #,0
+		lineageTag: 922ef920-0042-591b-bb99-e6c82f9ac4ca
+
+	measure 'Partners In Log' = DISTINCTCOUNT ( QualityLog[Company] )
+		formatString: #,0
+		lineageTag: b3b1603d-8fe8-5c58-94a4-0a7020e5dee6
+
+	measure 'Score Corrections' = CALCULATE ( [Log Entries], QualityLog[Check] = "Score correction" )
+		formatString: #,0
+		lineageTag: 5563ff1c-4a70-543f-9db2-1b5f58823ef8
+
+	measure 'Segment Corrections' = CALCULATE ( [Log Entries], QualityLog[Check] = "Segment correction" )
+		formatString: #,0
+		lineageTag: 5588ddf5-93eb-57c8-9845-9a59c472616f
+
+	measure 'Service Status Changes' = CALCULATE ( [Log Entries], QualityLog[Check] = "Service status changed" )
+		formatString: #,0
+		lineageTag: 394f243e-d574-571d-a168-15afa5ef01f7
+
+	column Company
+		dataType: string
+		isHidden
+		lineageTag: 2f0abee2-8abf-5ad4-8c7e-3ec3fffce50f
+		summarizeBy: none
+		sourceColumn: Company
+
+	column Module
+		dataType: string
+		lineageTag: 7c452a47-84d1-534e-bd01-ea71053077f0
+		summarizeBy: none
+		sourceColumn: Module
+
+	column Check
+		dataType: string
+		lineageTag: 4ea68b9f-3785-5336-83ea-c2d89ee558ab
+		summarizeBy: none
+		sourceColumn: Check
+
+	column Field
+		dataType: string
+		lineageTag: f1c43439-61a9-5bfa-9308-519711a22985
+		summarizeBy: none
+		sourceColumn: Field
+
+	column Before
+		dataType: string
+		lineageTag: 9e49c83d-5352-56a9-b273-49485a9f2aa3
+		summarizeBy: none
+		sourceColumn: Before
+
+	column After
+		dataType: string
+		lineageTag: 42c3b54d-3527-5b6c-83a2-3c85354382e7
+		summarizeBy: none
+		sourceColumn: After
+
+	column Detail
+		dataType: string
+		lineageTag: cfe377b0-1aa4-5e7c-8ffb-ead74c736841
+		summarizeBy: none
+		sourceColumn: Detail
+
+	partition QualityLog = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "sg_quality_log.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Blanks = Promoted,
+				    Typed = Table.TransformColumnTypes(Blanks, {{"Company", type text}, {"Module", type text}, {"Check", type text}, {"Field", type text}, {"Before", type text}, {"After", type text}, {"Detail", type text}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table

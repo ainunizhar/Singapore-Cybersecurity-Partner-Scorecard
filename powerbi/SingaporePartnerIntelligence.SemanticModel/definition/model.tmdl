@@ -1,0 +1,17 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["DataFolder", "Companies", "CompanyServices", "ModuleConfidence", "VendorStatus", "QualityLog"]
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+ref table Companies
+ref table CompanyServices
+ref table ModuleConfidence
+ref table VendorStatus
+ref table QualityLog

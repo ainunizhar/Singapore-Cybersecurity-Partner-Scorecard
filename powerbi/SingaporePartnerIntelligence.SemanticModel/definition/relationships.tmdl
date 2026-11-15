@@ -1,0 +1,15 @@
+relationship 467767ba-3fe1-5c07-a695-d8f1e81db0f3
+	fromColumn: CompanyServices.Company
+	toColumn: Companies.Company
+
+relationship e6bf428d-e15f-56a4-8859-34df5577e9ca
+	fromColumn: ModuleConfidence.Company
+	toColumn: Companies.Company
+
+relationship 9ded6f00-c0da-57ff-9014-808ec5288714
+	fromColumn: VendorStatus.Company
+	toColumn: Companies.Company
+
+relationship 176ef0fa-20b5-5674-a647-92ccf134fddf
+	fromColumn: QualityLog.Company
+	toColumn: Companies.Company

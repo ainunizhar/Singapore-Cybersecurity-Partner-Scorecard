@@ -1,0 +1,66 @@
+table ModuleConfidence
+	lineageTag: 042d9233-8fd5-5ac3-b355-2ef48d820266
+
+	measure Ratings = COUNTROWS ( ModuleConfidence )
+		formatString: #,0
+		lineageTag: 18f04c54-da8d-5744-bcdf-36b93116f4e6
+
+	measure 'High Confidence %' = DIVIDE ( CALCULATE ( [Ratings], ModuleConfidence[Confidence] = "High" ), [Ratings] )
+		formatString: 0%
+		lineageTag: 6168fd01-c629-58ca-95be-983ce6633889
+
+	column Company
+		dataType: string
+		isHidden
+		lineageTag: f4e639a9-5351-513d-9c74-f0b241fca5e5
+		summarizeBy: none
+		sourceColumn: Company
+
+	column Module
+		dataType: string
+		lineageTag: 8f4153d8-b26d-50ea-90bd-47d14f41f1f7
+		summarizeBy: none
+		sourceColumn: Module
+		sortByColumn: 'Module Order'
+
+	column 'Module Order'
+		dataType: int64
+		formatString: 0
+		isHidden
+		lineageTag: 020ec05f-3c51-557f-b5b5-f94ec68e2aa9
+		summarizeBy: none
+		sourceColumn: Module Order
+
+	column Confidence
+		dataType: string
+		lineageTag: 34c55a6c-cb94-5b9d-82e1-5f9e531f845a
+		summarizeBy: none
+		sourceColumn: Confidence
+		sortByColumn: 'Confidence Order'
+
+	column 'Confidence Order'
+		dataType: int64
+		formatString: 0
+		isHidden
+		lineageTag: 0b9daebf-e9b2-589c-90f1-4008c520a0d7
+		summarizeBy: none
+		sourceColumn: Confidence Order
+
+	partition ModuleConfidence = m
+		mode: import
+		source =
+				let
+				    Source = Companies,
+				    Kept = Table.SelectColumns(Source, {"Company", "Segmentation Confidence", "Services Confidence", "Vendor Confidence", "Funding Confidence", "GTM Confidence"}),
+				    Unpivoted0 = Table.UnpivotOtherColumns(Kept, {"Company"}, "Module Column", "Confidence"),
+				    Unpivoted = Table.SelectRows(Unpivoted0, each [Confidence] <> null and [Confidence] <> ""),
+				    Lookup = #table(type table [Module Column = text, Module = text, Module Order = Int64.Type], {{"Segmentation Confidence", "Segmentation", 1}, {"Services Confidence", "Services gap", 2}, {"Vendor Confidence", "Tech vendors", 3}, {"Funding Confidence", "Funding", 4}, {"GTM Confidence", "Go-to-market", 5}}),
+				    Joined = Table.NestedJoin(Unpivoted, {"Module Column"}, Lookup, {"Module Column"}, "L", JoinKind.LeftOuter),
+				    Expanded = Table.ExpandTableColumn(Joined, "L", {"Module", "Module Order"}),
+				    WithOrder = Table.AddColumn(Expanded, "Confidence Order", each if [Confidence] = "High" then 1 else if [Confidence] = "Medium" then 2 else 3, Int64.Type),
+				    Result = Table.SelectColumns(WithOrder, {"Company", "Module", "Module Order", "Confidence", "Confidence Order"}),
+				    Typed = Table.TransformColumnTypes(Result, {{"Company", type text}, {"Module", type text}, {"Module Order", Int64.Type}, {"Confidence", type text}, {"Confidence Order", Int64.Type}})
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table

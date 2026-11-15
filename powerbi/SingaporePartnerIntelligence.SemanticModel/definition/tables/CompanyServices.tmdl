@@ -1,0 +1,85 @@
+table CompanyServices
+	lineageTag: 0b222050-e975-503c-9b29-3581ce18c24f
+
+	measure 'Service Records' = COUNTROWS ( CompanyServices )
+		formatString: #,0
+		lineageTag: 9ab32362-3852-5bbb-a6df-69c6b82d444a
+
+	measure 'Offering (Yes)' = CALCULATE ( [Service Records], CompanyServices[Status] = "Yes" )
+		formatString: #,0
+		lineageTag: a0f1b87e-0a52-5588-a1bf-2657f9efe7ff
+
+	measure Partial = CALCULATE ( [Service Records], CompanyServices[Status] = "Partial" )
+		formatString: #,0
+		lineageTag: ef58c394-9d4b-581f-b89e-c8d860aa6de8
+
+	measure 'Not Offered (No)' = CALCULATE ( [Service Records], CompanyServices[Status] = "No" )
+		formatString: #,0
+		lineageTag: 6072ba8b-57e6-5608-86a3-308c0f730ef9
+
+	measure Unknown = CALCULATE ( [Service Records], CompanyServices[Status] = "Unknown" )
+		formatString: #,0
+		lineageTag: 58dfb1ad-9123-5cb0-a3c1-2cc4d1da09da
+
+	measure 'Coverage %' = DIVIDE ( [Offering (Yes)] + 0.5 * [Partial], [Offering (Yes)] + [Partial] + [Not Offered (No)] )
+		formatString: 0%
+		lineageTag: 277ce10c-c70d-5e66-9ff9-3fa3ca833341
+
+	measure 'Upsell Gaps' = CALCULATE ( [Service Records], CompanyServices[Status] <> "Yes" )
+		formatString: #,0
+		lineageTag: 75acebc9-aee4-5f77-9e0d-360ea83f7ef8
+
+	column Company
+		dataType: string
+		isHidden
+		lineageTag: ea2d0d1d-0ea3-5cb2-bb5c-3a4f59474a5d
+		summarizeBy: none
+		sourceColumn: Company
+
+	column Service
+		dataType: string
+		lineageTag: 055bacf5-6098-5f31-b8b6-f42727234d86
+		summarizeBy: none
+		sourceColumn: Service
+		sortByColumn: 'Service Order'
+
+	column 'Service Order'
+		dataType: int64
+		formatString: 0
+		isHidden
+		lineageTag: aa201532-3939-5dac-aed5-7ffc216b3a8b
+		summarizeBy: none
+		sourceColumn: Service Order
+
+	column Status
+		dataType: string
+		lineageTag: 5a65b155-cb88-5e79-adbe-36feaaf11a4e
+		summarizeBy: none
+		sourceColumn: Status
+		sortByColumn: 'Status Order'
+
+	column 'Status Order'
+		dataType: int64
+		formatString: 0
+		isHidden
+		lineageTag: 7253b4d6-2b23-51c1-bec2-f4864de9d82e
+		summarizeBy: none
+		sourceColumn: Status Order
+
+	partition CompanyServices = m
+		mode: import
+		source =
+				let
+				    Source = Companies,
+				    Kept = Table.SelectColumns(Source, {"Company", "S1 SIEM", "S2 MDR/EDR", "S3 SOC", "S4 Vulnerability Mgmt", "S5 Incident Response", "S6 Cloud Security", "S7 IAM", "S8 Compliance/GRC", "S9 OT/ICS"}),
+				    Unpivoted = Table.UnpivotOtherColumns(Kept, {"Company"}, "Service Column", "Status"),
+				    Lookup = #table(type table [Service Column = text, Service = text, Service Order = Int64.Type], {{"S1 SIEM", "SIEM", 1}, {"S2 MDR/EDR", "MDR / EDR", 2}, {"S3 SOC", "SOC", 3}, {"S4 Vulnerability Mgmt", "Vulnerability Mgmt", 4}, {"S5 Incident Response", "Incident Response", 5}, {"S6 Cloud Security", "Cloud Security", 6}, {"S7 IAM", "IAM", 7}, {"S8 Compliance/GRC", "Compliance / GRC", 8}, {"S9 OT/ICS", "OT / ICS", 9}}),
+				    Joined = Table.NestedJoin(Unpivoted, {"Service Column"}, Lookup, {"Service Column"}, "L", JoinKind.LeftOuter),
+				    Expanded = Table.ExpandTableColumn(Joined, "L", {"Service", "Service Order"}),
+				    WithOrder = Table.AddColumn(Expanded, "Status Order", each if [Status] = "Yes" then 1 else if [Status] = "Partial" then 2 else if [Status] = "No" then 3 else 4, Int64.Type),
+				    Result = Table.SelectColumns(WithOrder, {"Company", "Service", "Service Order", "Status", "Status Order"}),
+				    Typed = Table.TransformColumnTypes(Result, {{"Company", type text}, {"Service", type text}, {"Service Order", Int64.Type}, {"Status", type text}, {"Status Order", Int64.Type}})
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table

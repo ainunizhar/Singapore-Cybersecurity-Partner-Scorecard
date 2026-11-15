@@ -1,0 +1,13 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/pagesMetadata/1.0.0/schema.json",
+  "pageOrder": [
+    "overview",
+    "segmentation",
+    "services_gap",
+    "tech_vendors",
+    "funding_gtm",
+    "data_quality",
+    "partner_detail"
+  ],
+  "activePageName": "overview"
+}
