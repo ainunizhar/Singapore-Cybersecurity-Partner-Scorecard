@@ -1,0 +1,531 @@
+table Companies
+	lineageTag: fa3a00b5-0c6e-5a11-a8d1-f18704d1481c
+
+	measure Partners = COUNTROWS ( Companies )
+		formatString: #,0
+		lineageTag: 2f9be14c-dc26-53e4-b6cf-07d07624057c
+
+	measure 'Priority Partners (Score 4-5)' = CALCULATE ( [Partners], Companies[Partnership Score] >= 4 )
+		formatString: #,0
+		lineageTag: 145d4d6e-884f-521c-a475-6370c949b787
+
+	measure 'Tier 1 Partners (Score 5)' = CALCULATE ( [Partners], Companies[Partnership Score] = 5 )
+		formatString: #,0
+		lineageTag: b3b5786e-c687-5f46-9fd7-f62cb6f260e9
+
+	measure 'Avg Partnership Score' = AVERAGE ( Companies[Partnership Score] )
+		formatString: 0.00
+		lineageTag: f59d6520-7829-5d17-80d4-77c1d7c372f7
+
+	measure 'Avg Coverage Score' = AVERAGE ( Companies[Coverage Score] )
+		formatString: 0.0
+		lineageTag: 10552493-8509-5620-8e5a-3766c46b7dc9
+
+	measure 'High Gap Priority' = CALCULATE ( [Partners], Companies[Gap Priority] = "High" )
+		formatString: #,0
+		lineageTag: 5b7ee8fd-6e9e-5ab9-a8b3-532925df4183
+
+	measure 'MAS/CSA Focus %' = DIVIDE ( CALCULATE ( [Partners], Companies[MAS/CSA Focus] = "Yes" ), [Partners] )
+		formatString: 0%
+		lineageTag: 9fab4c6c-05e4-5486-b525-ea0cb31f1e20
+
+	measure 'CSA Licensed (Confirmed)' = CALCULATE ( [Partners], Companies[CSA Licensed] = "Yes" )
+		formatString: #,0
+		lineageTag: 5e9b4658-7fea-53f0-845b-5f457f3ef344
+
+	measure 'CREST Certified (Confirmed)' = CALCULATE ( [Partners], Companies[CREST Certified] = "Yes" )
+		formatString: #,0
+		lineageTag: 3f695daa-6691-5aa2-9215-86c0b482ad6d
+
+	measure 'Regulatory Flag Confirmed' = CALCULATE ( [Partners], Companies[Regulatory Flag] = "Confirmed" )
+		formatString: #,0
+		lineageTag: 1b42ecd1-72be-5304-bb1e-1114a86daf6e
+
+	measure 'No Longer Independent' = CALCULATE ( [Partners], Companies[Operating Status] IN { "Acquired", "Dormant", "Closed" } )
+		formatString: #,0
+		lineageTag: b838a55a-a39e-5a64-b91f-f10706bf6799
+
+	measure 'Partners With Disclosed Funding' = CALCULATE ( [Partners], Companies[Has Disclosed Funding] = "Yes" )
+		formatString: #,0
+		lineageTag: 92787830-d9e5-5415-9732-48545f2c2ab7
+
+	measure 'Disclosed Funding ($M)' = DIVIDE ( SUM ( Companies[Total Funding USD] ), 1000000 )
+		formatString: #,0.0
+		lineageTag: d1d6771b-38e4-5da8-ac72-9870e35f5e68
+
+	measure 'Government-Linked Partners' = CALCULATE ( [Partners], Companies[Government-Linked] = "Yes" )
+		formatString: #,0
+		lineageTag: f783cca2-f726-55bb-80f5-d79c91a48c39
+
+	measure 'Partner-led or Hybrid GTM' = CALCULATE ( [Partners], Companies[GTM Model] IN { "Partner-led", "Hybrid" } )
+		formatString: #,0
+		lineageTag: 6766ef5a-89a7-5600-b4f0-5b71e5e1be61
+
+	measure 'Decision Maker Identified %' = DIVIDE ( CALCULATE ( [Partners], Companies[Decision Makers Found] > 0 ), [Partners] )
+		formatString: 0%
+		lineageTag: 61c56324-77dd-50f6-84c6-84dfb51d48a1
+
+	measure 'Vendor Rows Deep-Verified' = CALCULATE ( [Partners], Companies[Vendor Deep-Verified] = "Yes" )
+		formatString: #,0
+		lineageTag: 128238b1-8f3f-5257-9eb9-18e2555e0470
+
+	measure 'Partner Name' = SELECTEDVALUE ( Companies[Company], "Several partners" )
+		lineageTag: 38a8cb05-f08a-54a7-a41e-d5436c76c66a
+
+	measure 'Credential Badges' = IF ( HASONEVALUE ( Companies[Company] ), VAR csa = SELECTEDVALUE ( Companies[CSA Licensed] ) = "Yes" VAR crest = SELECTEDVALUE ( Companies[CREST Certified] ) = "Yes" VAR mas = SELECTEDVALUE ( Companies[MAS/CSA Focus] ) = "Yes" RETURN "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='22' viewBox='0 0 200 22'>" & "<rect x='1' y='2' width='46' height='18' rx='9' fill='" & IF ( csa, "%23E3464B", "none" ) & "' stroke='" & IF ( csa, "%23E3464B", "%23A3AEC0" ) & "'/><text x='24' y='15' font-family='Segoe UI' font-size='11' font-weight='700' text-anchor='middle' fill='" & IF ( csa, "white", "%23A3AEC0" ) & "'>CSA</text>" & "<rect x='53' y='2' width='62' height='18' rx='9' fill='" & IF ( crest, "%23E3464B", "none" ) & "' stroke='" & IF ( crest, "%23E3464B", "%23A3AEC0" ) & "'/><text x='84' y='15' font-family='Segoe UI' font-size='11' font-weight='700' text-anchor='middle' fill='" & IF ( crest, "white", "%23A3AEC0" ) & "'>CREST</text>" & "<rect x='121' y='2' width='76' height='18' rx='9' fill='" & IF ( mas, "%23E3464B", "none" ) & "' stroke='" & IF ( mas, "%23E3464B", "%23A3AEC0" ) & "'/><text x='159' y='15' font-family='Segoe UI' font-size='11' font-weight='700' text-anchor='middle' fill='" & IF ( mas, "white", "%23A3AEC0" ) & "'>MAS/CSA</text>" & "</svg>" )
+		dataCategory: ImageUrl
+		lineageTag: 91487e6c-75ac-598a-a605-e1b6115b6b0f
+
+	measure 'KPI Sub Partners' = FORMAT ( CALCULATE ( [Partners], LEFT ( Companies[Operating Status], 6 ) = "Active" ) + 0, "#,0" ) & " active   ·   " & FORMAT ( [No Longer Independent] + 0, "#,0" ) & " acquired or closed"
+		lineageTag: 845aeaf9-1259-561d-b742-9ec991339e8a
+
+	measure 'KPI Sub Priority' = FORMAT ( DIVIDE ( [Priority Partners (Score 4-5)], [Partners] ), "0%" ) & " of partners score 4–5"
+		lineageTag: dcdb1d29-e147-5961-940d-f313da4c8ff4
+
+	measure 'KPI Sub Tier1' = "score 5 of 5   ·   average score " & FORMAT ( [Avg Partnership Score], "0.0" )
+		lineageTag: cd18382a-2551-5a4b-92fa-556bb226824c
+
+	measure 'KPI Sub CSA' = FORMAT ( CALCULATE ( [Partners], Companies[CSA Licensed] = "Unverified" ) + 0, "#,0" ) & " not yet verified"
+		lineageTag: 7adff08d-40d4-55a1-a0af-2bf6d92a321c
+
+	measure 'KPI Sub CREST' = FORMAT ( CALCULATE ( [Partners], Companies[CREST Certified] = "Unverified" ) + 0, "#,0" ) & " not yet verified"
+		lineageTag: e73088a1-0c93-5a12-82ea-b06aa66c0548
+
+	column Company
+		dataType: string
+		lineageTag: 3d1bacb3-36a4-57b4-b2b1-2451449ddadc
+		summarizeBy: none
+		sourceColumn: Company
+
+	column Website
+		dataType: string
+		lineageTag: 27b23230-8e9e-5c97-9c57-ee11e128ef3d
+		summarizeBy: none
+		sourceColumn: Website
+
+	column City
+		dataType: string
+		lineageTag: 760b30f9-c4f0-5283-b135-edfbfd4b067e
+		summarizeBy: none
+		sourceColumn: City
+
+	column Description
+		dataType: string
+		lineageTag: cbc78f31-3f30-5ea7-b6fd-96000f5d66fd
+		summarizeBy: none
+		sourceColumn: Description
+
+	column 'Primary Segment'
+		dataType: string
+		lineageTag: 57a43f62-0a52-566a-9674-e6c11a96419d
+		summarizeBy: none
+		sourceColumn: Primary Segment
+
+	column Segment
+		dataType: string
+		lineageTag: 53b4f2f9-7872-5af8-b137-39121f97517c
+		summarizeBy: none
+		sourceColumn: Segment
+
+	column 'Sub-Segment'
+		dataType: string
+		lineageTag: b8cec365-9aa6-515b-ba59-2244ad564948
+		summarizeBy: none
+		sourceColumn: Sub-Segment
+
+	column 'Market Focus'
+		dataType: string
+		lineageTag: 648754e0-3906-5fab-adf3-0a21e052f66d
+		summarizeBy: none
+		sourceColumn: Market Focus
+
+	column 'Geographic Reach'
+		dataType: string
+		lineageTag: 5b39df24-311a-560c-991f-eb9c4e525d26
+		summarizeBy: none
+		sourceColumn: Geographic Reach
+		sortByColumn: 'Geographic Reach Order'
+
+	column 'Geographic Reach Order'
+		dataType: int64
+		formatString: 0
+		isHidden
+		lineageTag: 1544e414-3783-5604-b16a-d3fa5089e15b
+		summarizeBy: none
+		sourceColumn: Geographic Reach Order
+
+	column 'Size Tier'
+		dataType: string
+		lineageTag: d94a72ce-04fc-5bb7-95cc-f252411127f5
+		summarizeBy: none
+		sourceColumn: Size Tier
+		sortByColumn: 'Size Tier Order'
+
+	column 'Size Tier Order'
+		dataType: int64
+		formatString: 0
+		isHidden
+		lineageTag: 14c1fd5a-b5fb-5028-8bfb-0e54ddfc9f88
+		summarizeBy: none
+		sourceColumn: Size Tier Order
+
+	column 'Partnership Score'
+		dataType: int64
+		formatString: 0
+		lineageTag: 0fe28a24-a169-583b-bc8c-a9f08de5129b
+		summarizeBy: none
+		sourceColumn: Partnership Score
+
+	column 'Score Tier'
+		dataType: string
+		lineageTag: 3db5d1a9-4785-5502-8eb8-333de69beeac
+		summarizeBy: none
+		sourceColumn: Score Tier
+
+	column 'Score Rationale'
+		dataType: string
+		lineageTag: 6d80188f-3efd-5ab5-ab60-4c82593df50c
+		summarizeBy: none
+		sourceColumn: Score Rationale
+
+	column 'Segmentation Confidence'
+		dataType: string
+		lineageTag: c7c1f628-42ec-5e07-beab-75049a1a0575
+		summarizeBy: none
+		sourceColumn: Segmentation Confidence
+
+	column 'Regulatory Flag'
+		dataType: string
+		lineageTag: cf387357-306c-56ff-877b-98d894bc898c
+		summarizeBy: none
+		sourceColumn: Regulatory Flag
+
+	column 'CSA Licensed'
+		dataType: string
+		lineageTag: c1b8a606-c4bf-5076-a4e7-85b647c65fed
+		summarizeBy: none
+		sourceColumn: CSA Licensed
+
+	column 'CSA Detail'
+		dataType: string
+		lineageTag: 304d6c76-0bdc-503f-b1c9-dbf79f9c9391
+		summarizeBy: none
+		sourceColumn: CSA Detail
+
+	column 'CREST Certified'
+		dataType: string
+		lineageTag: 5c84c7e2-1117-5460-a818-1e8d5dfe90fc
+		summarizeBy: none
+		sourceColumn: CREST Certified
+
+	column 'CREST Detail'
+		dataType: string
+		lineageTag: 0ba54d06-2a16-5f1e-95cb-ac26eaef63cc
+		summarizeBy: none
+		sourceColumn: CREST Detail
+
+	column 'Operating Status'
+		dataType: string
+		lineageTag: 37bc9967-0ae4-50bd-974a-aea557bb03dd
+		summarizeBy: none
+		sourceColumn: Operating Status
+
+	column 'Growth Score Tier'
+		dataType: string
+		lineageTag: 30bf5bfc-5323-5ae6-b24c-c21be2a6c99d
+		summarizeBy: none
+		sourceColumn: Growth Score Tier
+
+	column 'Heat Score Tier'
+		dataType: string
+		lineageTag: b4120fab-ccec-5d26-848f-149ff29efbce
+		summarizeBy: none
+		sourceColumn: Heat Score Tier
+
+	column 'Services Listed'
+		dataType: string
+		lineageTag: f45bfe64-a897-5c65-ac67-0ef86d809812
+		summarizeBy: none
+		sourceColumn: Services Listed
+
+	column 'Research Sources'
+		dataType: string
+		lineageTag: 2c351bb0-d668-584f-b280-823f12109c52
+		summarizeBy: none
+		sourceColumn: Research Sources
+
+	column 'S1 SIEM'
+		dataType: string
+		lineageTag: 2907e935-36ed-531f-89e4-8349bac24dac
+		summarizeBy: none
+		sourceColumn: S1 SIEM
+
+	column 'S2 MDR/EDR'
+		dataType: string
+		lineageTag: 5b4915d3-53b5-59b0-82ac-6ab1b89f8287
+		summarizeBy: none
+		sourceColumn: S2 MDR/EDR
+
+	column 'S3 SOC'
+		dataType: string
+		lineageTag: a179e4f9-b887-52b2-b254-027882d9276c
+		summarizeBy: none
+		sourceColumn: S3 SOC
+
+	column 'S4 Vulnerability Mgmt'
+		dataType: string
+		lineageTag: 2fb8082f-57c4-53f7-a6ac-ea8a8d909eb8
+		summarizeBy: none
+		sourceColumn: S4 Vulnerability Mgmt
+
+	column 'S5 Incident Response'
+		dataType: string
+		lineageTag: f27f42f8-7352-551d-a753-7b8d47317d50
+		summarizeBy: none
+		sourceColumn: S5 Incident Response
+
+	column 'S6 Cloud Security'
+		dataType: string
+		lineageTag: eeefd5cd-44b3-5bf3-b4d4-0a4493672e83
+		summarizeBy: none
+		sourceColumn: S6 Cloud Security
+
+	column 'S7 IAM'
+		dataType: string
+		lineageTag: 5b49d4ab-de55-5f69-985b-b59513f391aa
+		summarizeBy: none
+		sourceColumn: S7 IAM
+
+	column 'S8 Compliance/GRC'
+		dataType: string
+		lineageTag: 9442b7c0-3cbc-5340-82f8-16a601484a62
+		summarizeBy: none
+		sourceColumn: S8 Compliance/GRC
+
+	column 'S9 OT/ICS'
+		dataType: string
+		lineageTag: abd5ca91-17fa-514b-9214-7018a4ac6984
+		summarizeBy: none
+		sourceColumn: S9 OT/ICS
+
+	column 'Coverage Score'
+		dataType: int64
+		formatString: 0
+		lineageTag: dfa9bdc4-e5e1-50c1-89ef-809910df057a
+		summarizeBy: none
+		sourceColumn: Coverage Score
+
+	column 'Gap Priority'
+		dataType: string
+		lineageTag: 45aade10-11fd-5960-b368-42527c1b5a05
+		summarizeBy: none
+		sourceColumn: Gap Priority
+		sortByColumn: 'Gap Priority Order'
+
+	column 'Gap Priority Order'
+		dataType: int64
+		formatString: 0
+		isHidden
+		lineageTag: 0b5704da-77a8-5090-9fd3-5f6ccaebd265
+		summarizeBy: none
+		sourceColumn: Gap Priority Order
+
+	column 'Upsell Services'
+		dataType: string
+		lineageTag: 0334fa40-2ec3-55ef-90d0-c117ec3add67
+		summarizeBy: none
+		sourceColumn: Upsell Services
+
+	column 'MAS/CSA Focus'
+		dataType: string
+		lineageTag: 7a03f191-a358-5381-9c8a-76e32003a61f
+		summarizeBy: none
+		sourceColumn: MAS/CSA Focus
+
+	column 'Services Confidence'
+		dataType: string
+		lineageTag: 2258679a-1113-5d55-8968-e2d08d93836d
+		summarizeBy: none
+		sourceColumn: Services Confidence
+
+	column 'Services Page URL'
+		dataType: string
+		lineageTag: 606401a6-c0be-536f-8032-7273be942863
+		summarizeBy: none
+		sourceColumn: Services Page URL
+
+	column 'SIEM Platform'
+		dataType: string
+		lineageTag: c7d6d7fb-fccb-50b3-91c4-4f79bcf0c810
+		summarizeBy: none
+		sourceColumn: SIEM Platform
+
+	column 'SIEM Platform Detail'
+		dataType: string
+		lineageTag: 96faa62a-6aa9-5cb9-90e6-f2be1dd1e64c
+		summarizeBy: none
+		sourceColumn: SIEM Platform Detail
+
+	column 'Other Vendors'
+		dataType: string
+		lineageTag: c22fc88c-8618-5a12-9327-fe76c7eec00a
+		summarizeBy: none
+		sourceColumn: Other Vendors
+
+	column 'Vendor Confidence'
+		dataType: string
+		lineageTag: 9c557f39-2ff7-545e-8521-94425f66364d
+		summarizeBy: none
+		sourceColumn: Vendor Confidence
+
+	column 'Vendor Deep-Verified'
+		dataType: string
+		lineageTag: 7e0bba22-ba97-55de-8437-e744ffffdf2b
+		summarizeBy: none
+		sourceColumn: Vendor Deep-Verified
+
+	column 'Ownership Type'
+		dataType: string
+		lineageTag: 83b346b0-a62f-5cb2-ba03-588f3dd7e9b4
+		summarizeBy: none
+		sourceColumn: Ownership Type
+
+	column 'Funding Stage'
+		dataType: string
+		lineageTag: 1a20c7dd-0060-5bcf-8900-4747cc8ea0ec
+		summarizeBy: none
+		sourceColumn: Funding Stage
+
+	column 'Founded Year'
+		dataType: int64
+		formatString: 0
+		lineageTag: 5b503d55-d6a4-5b06-b2f2-8ce4b59fe0cc
+		summarizeBy: none
+		sourceColumn: Founded Year
+
+	column 'Total Funding USD'
+		dataType: double
+		formatString: #,0.##
+		lineageTag: c4273243-873b-5e18-8aa7-23b0391f3377
+		summarizeBy: none
+		sourceColumn: Total Funding USD
+
+	column 'Latest Round'
+		dataType: string
+		lineageTag: f1b8864e-3efe-5680-9175-b23f94572f71
+		summarizeBy: none
+		sourceColumn: Latest Round
+
+	column 'Latest Round Amount USD'
+		dataType: double
+		formatString: #,0.##
+		lineageTag: edb4458b-bf4a-57fe-8561-c33363495258
+		summarizeBy: none
+		sourceColumn: Latest Round Amount USD
+
+	column 'Latest Round Date'
+		dataType: string
+		lineageTag: fa1617da-3206-50a0-bfee-b6ff363411c4
+		summarizeBy: none
+		sourceColumn: Latest Round Date
+
+	column 'Revenue Estimate'
+		dataType: string
+		lineageTag: 428da41c-472e-52a2-8f41-dcf1df5de304
+		summarizeBy: none
+		sourceColumn: Revenue Estimate
+
+	column 'Growth Signal'
+		dataType: string
+		lineageTag: 73d6cea2-d2b1-5230-8adc-13f82f1a0c4d
+		summarizeBy: none
+		sourceColumn: Growth Signal
+
+	column 'Exit Likelihood'
+		dataType: string
+		lineageTag: dff75ce2-59f6-5e48-aa04-f97bb0794283
+		summarizeBy: none
+		sourceColumn: Exit Likelihood
+
+	column 'Government-Linked'
+		dataType: string
+		lineageTag: 182a2667-f480-5b53-b17e-53fd6bea65e1
+		summarizeBy: none
+		sourceColumn: Government-Linked
+
+	column 'Funding Confidence'
+		dataType: string
+		lineageTag: 7efd8057-19f6-5ed3-a8ac-b7b260717ab3
+		summarizeBy: none
+		sourceColumn: Funding Confidence
+
+	column 'GTM Model'
+		dataType: string
+		lineageTag: 9e532be2-9b4a-5ad2-ae78-e69ebc178483
+		summarizeBy: none
+		sourceColumn: GTM Model
+
+	column 'GTM Confidence'
+		dataType: string
+		lineageTag: e3c36f0c-9ced-5ce9-9781-fbed77be7ba1
+		summarizeBy: none
+		sourceColumn: GTM Confidence
+
+	column 'GTM Evidence'
+		dataType: string
+		lineageTag: 8e1f0d6b-416d-5b12-a569-1b8875bea0c7
+		summarizeBy: none
+		sourceColumn: GTM Evidence
+
+	column 'GTM Evidence URL'
+		dataType: string
+		lineageTag: 6c329ed3-b881-56bc-875e-42fc78cf9302
+		summarizeBy: none
+		sourceColumn: GTM Evidence URL
+
+	column 'SG Presence Confirmed'
+		dataType: string
+		lineageTag: 3a9e2858-68b5-5a76-9c5f-0c473d4e27b2
+		summarizeBy: none
+		sourceColumn: SG Presence Confirmed
+
+	column 'Screening Priority Flag'
+		dataType: string
+		lineageTag: 4ff27369-5cf6-521e-b202-f3899203860d
+		summarizeBy: none
+		sourceColumn: Screening Priority Flag
+
+	column 'Decision Makers Found'
+		dataType: int64
+		formatString: 0
+		lineageTag: d5ee7d7c-2ca4-5d6f-86f5-65fcf036f2ee
+		summarizeBy: none
+		sourceColumn: Decision Makers Found
+
+	column 'Score Label'
+		dataType: string
+		lineageTag: c4b9fe40-607e-51d4-8e51-0fbe6d073ad1
+		summarizeBy: none
+		sourceColumn: Score Label
+		sortByColumn: 'Partnership Score'
+
+	column 'Has Disclosed Funding'
+		dataType: string
+		lineageTag: 9f245091-71c5-5347-b728-624487b9719a
+		summarizeBy: none
+		sourceColumn: Has Disclosed Funding
+
+	partition Companies = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "sg_companies.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Blanks = Table.ReplaceValue(Promoted, "", null, Replacer.ReplaceValue, {"Geographic Reach Order", "Size Tier Order", "Partnership Score", "Coverage Score", "Gap Priority Order", "Founded Year", "Total Funding USD", "Latest Round Amount USD", "Decision Makers Found"}),
+				    Typed = Table.TransformColumnTypes(Blanks, {{"Company", type text}, {"Website", type text}, {"City", type text}, {"Description", type text}, {"Primary Segment", type text}, {"Segment", type text}, {"Sub-Segment", type text}, {"Market Focus", type text}, {"Geographic Reach", type text}, {"Geographic Reach Order", Int64.Type}, {"Size Tier", type text}, {"Size Tier Order", Int64.Type}, {"Partnership Score", Int64.Type}, {"Score Tier", type text}, {"Score Rationale", type text}, {"Segmentation Confidence", type text}, {"Regulatory Flag", type text}, {"CSA Licensed", type text}, {"CSA Detail", type text}, {"CREST Certified", type text}, {"CREST Detail", type text}, {"Operating Status", type text}, {"Growth Score Tier", type text}, {"Heat Score Tier", type text}, {"Services Listed", type text}, {"Research Sources", type text}, {"S1 SIEM", type text}, {"S2 MDR/EDR", type text}, {"S3 SOC", type text}, {"S4 Vulnerability Mgmt", type text}, {"S5 Incident Response", type text}, {"S6 Cloud Security", type text}, {"S7 IAM", type text}, {"S8 Compliance/GRC", type text}, {"S9 OT/ICS", type text}, {"Coverage Score", Int64.Type}, {"Gap Priority", type text}, {"Gap Priority Order", Int64.Type}, {"Upsell Services", type text}, {"MAS/CSA Focus", type text}, {"Services Confidence", type text}, {"Services Page URL", type text}, {"SIEM Platform", type text}, {"SIEM Platform Detail", type text}, {"Other Vendors", type text}, {"Vendor Confidence", type text}, {"Vendor Deep-Verified", type text}, {"Ownership Type", type text}, {"Funding Stage", type text}, {"Founded Year", Int64.Type}, {"Total Funding USD", type number}, {"Latest Round", type text}, {"Latest Round Amount USD", type number}, {"Latest Round Date", type text}, {"Revenue Estimate", type text}, {"Growth Signal", type text}, {"Exit Likelihood", type text}, {"Government-Linked", type text}, {"Funding Confidence", type text}, {"GTM Model", type text}, {"GTM Confidence", type text}, {"GTM Evidence", type text}, {"GTM Evidence URL", type text}, {"SG Presence Confirmed", type text}, {"Screening Priority Flag", type text}, {"Decision Makers Found", Int64.Type}}, "en-US"),
+				    ScoreLabel = Table.AddColumn(Typed, "Score Label", each Text.From([Partnership Score]) & " - " & [Score Tier], type text),
+				    Funded = Table.AddColumn(ScoreLabel, "Has Disclosed Funding", each if [Total Funding USD] = null then "No" else "Yes", type text)
+				in
+				    Funded
+
+	annotation PBI_ResultType = Table

@@ -1,0 +1,89 @@
+table VendorStatus
+	lineageTag: 89445084-97b8-51bc-9fb7-ef4431f8eb34
+
+	measure 'Vendor Records' = COUNTROWS ( VendorStatus )
+		formatString: #,0
+		lineageTag: 89fc669e-f243-5a55-b473-7eb08ee5c8e4
+
+	measure 'Confirmed Ties' = CALCULATE ( [Vendor Records], VendorStatus[Status] = "Confirmed" )
+		formatString: #,0
+		lineageTag: dbf9d1db-3396-5339-8cf2-90a2d7985b31
+
+	measure 'Partners With Confirmed Tie' = CALCULATE ( DISTINCTCOUNT ( VendorStatus[Company] ), VendorStatus[Status] = "Confirmed" )
+		formatString: #,0
+		lineageTag: 2695ddea-778e-59b5-8172-26301ef28856
+
+	measure 'Confirmed or Likely Ties' = CALCULATE ( [Vendor Records], VendorStatus[Status] IN { "Confirmed", "Likely" } )
+		formatString: #,0
+		lineageTag: 0315a62e-69cc-5bf5-9ffb-197fbd1443c6
+
+	measure 'KPI Sub Ties' = FORMAT ( [Partners With Confirmed Tie] + 0, "#,0" ) & " partners   ·   " & FORMAT ( CALCULATE ( [Vendor Records], VendorStatus[Status] IN { "Likely", "Possible" } ) + 0, "#,0" ) & " likely or possible"
+		lineageTag: 43e5a20f-4ca0-50ab-8668-589046eb402d
+
+	column Company
+		dataType: string
+		isHidden
+		lineageTag: 6435de03-2154-5061-878e-146061dd7d91
+		summarizeBy: none
+		sourceColumn: Company
+
+	column Vendor
+		dataType: string
+		lineageTag: 116d1ea9-c457-59f6-bfc3-efb8f4bb68ea
+		summarizeBy: none
+		sourceColumn: Vendor
+		sortByColumn: 'Vendor Order'
+
+	column 'Vendor Order'
+		dataType: int64
+		formatString: 0
+		isHidden
+		lineageTag: a53e6995-0bb8-5711-a3e1-d2ac57173815
+		summarizeBy: none
+		sourceColumn: Vendor Order
+
+	column 'Vendor Type'
+		dataType: string
+		lineageTag: 0b6fbe55-56fe-5781-a462-3bb5fb83dd19
+		summarizeBy: none
+		sourceColumn: Vendor Type
+
+	column Status
+		dataType: string
+		lineageTag: b2854a19-1fca-5353-a5c1-d47a45115e0f
+		summarizeBy: none
+		sourceColumn: Status
+		sortByColumn: 'Status Order'
+
+	column 'Status Order'
+		dataType: int64
+		formatString: 0
+		isHidden
+		lineageTag: eb997965-8a0b-598a-bb01-93926bb4527a
+		summarizeBy: none
+		sourceColumn: Status Order
+
+	column Detail
+		dataType: string
+		lineageTag: 36f37047-49d4-55d0-b707-92ca935793ff
+		summarizeBy: none
+		sourceColumn: Detail
+
+	column 'Evidence URL'
+		dataType: string
+		lineageTag: 4d949dcc-2961-5682-b829-a56e228bcaeb
+		summarizeBy: none
+		sourceColumn: Evidence URL
+
+	partition VendorStatus = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "sg_vendor_status.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Blanks = Table.ReplaceValue(Promoted, "", null, Replacer.ReplaceValue, {"Vendor Order", "Status Order"}),
+				    Typed = Table.TransformColumnTypes(Blanks, {{"Company", type text}, {"Vendor", type text}, {"Vendor Order", Int64.Type}, {"Vendor Type", type text}, {"Status", type text}, {"Status Order", Int64.Type}, {"Detail", type text}, {"Evidence URL", type text}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
