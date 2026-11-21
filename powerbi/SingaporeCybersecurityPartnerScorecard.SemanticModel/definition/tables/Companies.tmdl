@@ -5,11 +5,11 @@ table Companies
 		formatString: #,0
 		lineageTag: 2f9be14c-dc26-53e4-b6cf-07d07624057c
 
-	measure 'Priority Partners (Score 4-5)' = CALCULATE ( [Partners], Companies[Partnership Score] >= 4 )
+	measure 'Priority Partners (Score 4-5)' = CALCULATE ( [Partners], Companies[Partnership Score] >= 4 ) + 0
 		formatString: #,0
 		lineageTag: 145d4d6e-884f-521c-a475-6370c949b787
 
-	measure 'Tier 1 Partners (Score 5)' = CALCULATE ( [Partners], Companies[Partnership Score] = 5 )
+	measure 'Tier 1 Partners (Score 5)' = CALCULATE ( [Partners], Companies[Partnership Score] = 5 ) + 0
 		formatString: #,0
 		lineageTag: b3b5786e-c687-5f46-9fd7-f62cb6f260e9
 
@@ -29,11 +29,11 @@ table Companies
 		formatString: 0%
 		lineageTag: 9fab4c6c-05e4-5486-b525-ea0cb31f1e20
 
-	measure 'CSA Licensed (Confirmed)' = CALCULATE ( [Partners], Companies[CSA Licensed] = "Yes" )
+	measure 'CSA Licensed (Confirmed)' = CALCULATE ( [Partners], Companies[CSA Licensed] = "Yes" ) + 0
 		formatString: #,0
 		lineageTag: 5e9b4658-7fea-53f0-845b-5f457f3ef344
 
-	measure 'CREST Certified (Confirmed)' = CALCULATE ( [Partners], Companies[CREST Certified] = "Yes" )
+	measure 'CREST Certified (Confirmed)' = CALCULATE ( [Partners], Companies[CREST Certified] = "Yes" ) + 0
 		formatString: #,0
 		lineageTag: 3f695daa-6691-5aa2-9215-86c0b482ad6d
 
@@ -57,7 +57,7 @@ table Companies
 		formatString: #,0
 		lineageTag: f783cca2-f726-55bb-80f5-d79c91a48c39
 
-	measure 'Partner-led or Hybrid GTM' = CALCULATE ( [Partners], Companies[GTM Model] IN { "Partner-led", "Hybrid" } )
+	measure 'Partner-led or Hybrid GTM' = CALCULATE ( [Partners], KEEPFILTERS ( Companies[GTM Model] IN { "Partner-led", "Hybrid" } ) )
 		formatString: #,0
 		lineageTag: 6766ef5a-89a7-5600-b4f0-5b71e5e1be61
 

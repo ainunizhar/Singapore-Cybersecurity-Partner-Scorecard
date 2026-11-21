@@ -5,7 +5,7 @@ table VendorStatus
 		formatString: #,0
 		lineageTag: 89fc669e-f243-5a55-b473-7eb08ee5c8e4
 
-	measure 'Confirmed Ties' = CALCULATE ( [Vendor Records], VendorStatus[Status] = "Confirmed" )
+	measure 'Confirmed Ties' = CALCULATE ( [Vendor Records], VendorStatus[Status] = "Confirmed" ) + 0
 		formatString: #,0
 		lineageTag: dbf9d1db-3396-5339-8cf2-90a2d7985b31
 

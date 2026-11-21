@@ -3,10 +3,10 @@
   "name": "db_s0",
   "position": {
     "x": 1060,
-    "y": 26,
+    "y": 20,
     "z": 3000,
     "width": 200,
-    "height": 60,
+    "height": 74,
     "tabOrder": 3000
   },
   "visual": {
@@ -88,7 +88,7 @@
             "top": {
               "expr": {
                 "Literal": {
-                  "Value": "4D"
+                  "Value": "5D"
                 }
               }
             },
@@ -102,7 +102,7 @@
             "bottom": {
               "expr": {
                 "Literal": {
-                  "Value": "2D"
+                  "Value": "4D"
                 }
               }
             },
