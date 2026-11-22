@@ -1,6 +1,6 @@
 # Singapore Cybersecurity Partner Scorecard (Power BI)
 
-A one-page Power BI dashboard of **152 Singapore cybersecurity services firms**, each scored 1–5 as a potential
+A one-page Power BI dashboard of **152 Singapore cybersecurity services firms**, each scored 1-5 as a potential
 channel partner and checked against 9 core services, 6 security vendors and 2 SIEM platforms. It continues the
 [Cybersecurity Provider Screening Audit](https://github.com/ainunizhar/Cybersecurity-Provider-Screening-Audit), where
 336 companies were screened and 153 kept.

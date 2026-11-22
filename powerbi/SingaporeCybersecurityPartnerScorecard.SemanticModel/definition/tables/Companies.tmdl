@@ -79,7 +79,7 @@ table Companies
 	measure 'KPI Sub Partners' = FORMAT ( CALCULATE ( [Partners], LEFT ( Companies[Operating Status], 6 ) = "Active" ) + 0, "#,0" ) & " active   ·   " & FORMAT ( [No Longer Independent] + 0, "#,0" ) & " acquired or closed"
 		lineageTag: 845aeaf9-1259-561d-b742-9ec991339e8a
 
-	measure 'KPI Sub Priority' = FORMAT ( DIVIDE ( [Priority Partners (Score 4-5)], [Partners] ), "0%" ) & " of partners score 4–5"
+	measure 'KPI Sub Priority' = FORMAT ( DIVIDE ( [Priority Partners (Score 4-5)], [Partners] ), "0%" ) & " of partners score 4-5"
 		lineageTag: dcdb1d29-e147-5961-940d-f313da4c8ff4
 
 	measure 'KPI Sub Tier1' = "score 5 of 5   ·   average score " & FORMAT ( [Avg Partnership Score], "0.0" )
